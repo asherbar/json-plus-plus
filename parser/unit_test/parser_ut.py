@@ -51,3 +51,21 @@ class ParserUnittest(unittest.TestCase):
         }
         """
         self._verify(source, {'foo': 'bar', 'foobar': 'bar', 'ref': 'bar'})
+        self._verify('', {})
+
+    def test_comment(self):
+        source = """
+        \\ To be
+        {
+            "standard json": { \\ or not to be
+                "hello": "world !",
+                "list": [1, 2, 3],
+                \\ that is
+                "number": 3.14,
+                "bool": true
+            }
+            \\ the
+        }
+        \\question
+        """
+        self._verify(source, {'standard json': {'hello': 'world !', 'list': [1, 2, 3], 'number': 3.14, 'bool': True}})

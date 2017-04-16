@@ -67,7 +67,7 @@ def t_NAME(t):
 
 def t_COMMENT(t):
     r"""
-    \#.*
+    \\.*
     """
     # No return value. Token discarded
     pass
