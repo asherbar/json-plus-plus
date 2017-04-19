@@ -8,6 +8,9 @@ from parser.yacc import GrammarDef
 class ParserUnittest(unittest.TestCase):
     object_under_test = GrammarDef().build()
 
+    def setUp(self):
+        self.object_under_test.clear_namespace()
+
     def _verify(self, source, expected_namespace):
         self.object_under_test.parse(source)
         self.assertEqual(self.object_under_test.namespace, expected_namespace)
@@ -51,7 +54,6 @@ class ParserUnittest(unittest.TestCase):
         }
         """
         self._verify(source, {'foo': 'bar', 'foobar': 'bar', 'ref': 'bar'})
-        self._verify('', {})
 
     def test_comment(self):
         source = """
@@ -69,3 +71,25 @@ class ParserUnittest(unittest.TestCase):
         \\question
         """
         self._verify(source, {'standard json': {'hello': 'world !', 'list': [1, 2, 3], 'number': 3.14, 'bool': True}})
+
+    def test_local_ref_of_ref(self):
+        source = """
+        {
+            "foo": "bar",
+            "bar": "foobar",
+            "foobar": "hi",
+            "ref1": ref[ref["foo"]],
+            "nest": {
+                "ref2": ref[ref[ref["foo"]]]
+            }
+        }
+        """
+        self._verify(source, {'foo': 'bar', 'bar': 'foobar', 'foobar': 'hi', 'ref1': 'foobar', 'nest': {'ref2': 'hi'}})
+
+    def test_bad_ref(self):
+        source = """
+        {
+            "foo": ref["bar"]
+        }
+        """
+        self.assertRaises(NameError, self.object_under_test.parse, source)

@@ -3,6 +3,7 @@ import logging
 import collections
 import ply.yacc as yacc
 
+from parser.expression import ReferencedExpression
 from parser.lex import tokens
 from parser.reference_resolver import ReferenceResolver
 
@@ -37,6 +38,9 @@ class GrammarDef:
     @property
     def namespace(self):
         return self._reference_resolver.namespace
+
+    def clear_namespace(self):
+        self._reference_resolver.clear_namespace()
 
     def p_start(self, _):
         """
@@ -126,13 +130,7 @@ class GrammarDef:
         """
         ref : REF LBRAC dict_key RBRAC
         """
-        # This won't work...
-        p[0] = self._reference_resolver.create_reference(p[3])
-
-        # self._dict_lookup_builder = []
-        # p[0] = self._reference_resolver.namespace.get(p[3], _UndefinedReference(p[3], p.lineno(3), p.lexpos(3)))
-        # if isinstance(p[0], _UndefinedReference):
-        #     self._logger.error('Unknown reference: {}'.format(p[0]))
+        p[0] = ReferencedExpression(p[3], self._reference_resolver)
     #
     # def p_dict_lookup(self, p):
     #     """
@@ -178,7 +176,7 @@ class GrammarDef:
         """
         number : INTEGER DOT INTEGER
         """
-        p[0] = float('{}.{}'.format(str(p[1]), p[3]))
+        p[0] = float('{}.{}'.format(str(p[1].value), p[3].value))
 
     def p_finish(self, _):
         """

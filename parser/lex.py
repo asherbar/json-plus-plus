@@ -1,5 +1,6 @@
 import ply.lex as lex
 
+from parser.expression import Expression
 
 reserved = {
     'extends': 'EXTENDS',
@@ -45,7 +46,7 @@ def t_INTEGER(t):
     r"""
     \d+
     """
-    t.value = int(t.value)
+    t.value = Expression(int(t.value))
     return t
 
 
@@ -53,7 +54,7 @@ def t_STRING_LITERAL(t):
     """
     "[^"\n]*"
     """
-    t.value = t.value.strip('"')
+    t.value = Expression(t.value.strip('"'))
     return t
 
 
@@ -77,7 +78,7 @@ def t_BOOLEAN(t):
     """
     true|false
     """
-    t.value = t.value == 'true'
+    t.value = Expression(t.value == 'true')
     return t
 
 
