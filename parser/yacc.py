@@ -24,7 +24,8 @@ class GrammarDef:
         self._logger = logging.getLogger(self.__class__.__name__)
         self._reference_resolver = ReferenceResolver()
         self._dict_builder = {}
-        self._list_builder = []
+        self._list_builder = collections.deque()
+        self._lookup_builder = collections.deque()
         self.tokens = tokens
 
     def build(self, **yacc_params):
@@ -128,16 +129,17 @@ class GrammarDef:
 
     def p_ref(self, p):
         """
-        ref : REF LBRAC dict_key RBRAC
+        ref : REF lookup
         """
-        p[0] = ReferencedExpression(p[3], self._reference_resolver)
-    #
-    # def p_dict_lookup(self, p):
-    #     """
-    #     dict_lookup : LBRAC dict_key RBRAC
-    #                 | LBRAC dict_key RBRAC dict_lookup
-    #     """
-    #     self._dict_lookup_builder.insert(0, p[2])
+        p[0] = ReferencedExpression(list(self._lookup_builder), self._reference_resolver)
+        self._lookup_builder = collections.deque()
+
+    def p_lookup(self, p):
+        """
+        lookup : LBRAC dict_key RBRAC
+               | LBRAC dict_key RBRAC lookup
+        """
+        self._lookup_builder.appendleft(p[2])
 
     def p_dict_val(self, p):
         """
@@ -156,7 +158,7 @@ class GrammarDef:
                  | LBRAC list_entries RBRAC
         """
         p[0] = list(self._list_builder)
-        self._list_builder = []
+        self._list_builder = collections.deque()
 
     def p_list_entries(self, p):
         """
@@ -164,7 +166,7 @@ class GrammarDef:
                      | dict_val COMMA
                      | dict_val COMMA list_entries
         """
-        self._list_builder.insert(0, p[1])
+        self._list_builder.appendleft(p[1])
 
     def p_integer_number(self, p):
         """

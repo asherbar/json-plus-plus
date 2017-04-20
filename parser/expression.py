@@ -31,7 +31,10 @@ class ReferencedExpression(Expression):
 
     @property
     def value(self):
-        return self._namespace[self._value.value]
+        ret = self._namespace
+        for key in self._value:
+            ret = ret[key.value]
+        return ret
 
 
 class Operation:

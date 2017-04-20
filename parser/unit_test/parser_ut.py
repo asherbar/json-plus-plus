@@ -93,3 +93,12 @@ class ParserUnittest(unittest.TestCase):
         }
         """
         self.assertRaises(NameError, self.object_under_test.parse, source)
+
+    def test_ref_lookup_path(self):
+        source = """
+        {
+            "foo": {"bar": {"foobar": [19, 84]}},
+            "baz": ref["foo"]["bar"]["foobar"][1]
+        }
+        """
+        self._verify(source, {'foo': {'bar': {'foobar': [19, 84]}}, 'baz': 84})
