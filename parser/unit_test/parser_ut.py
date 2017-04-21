@@ -117,12 +117,13 @@ class ParserUnittest(unittest.TestCase):
             "pow": 2 ** 8,
             "negative": -14,
             "invert": ~2,
+            "parenthesis": (5 + 5) * (2 + 3),
             "precedent operation": 1 + 2**2 * -3 < 1 + -2**2 * -2
         }
         """
         self._verify(source, {'comparison': True, 'bitwise': 7, 'bit shift': 4, 'plus ints': 6,
                               'plus string': 'Hello, World!', 'minus': -4, 'mul': 0.5, 'pow': 256, 'mul strings': 'aaa',
-                              'negative': -14, 'invert': -3, 'precedent operation': True})
+                              'negative': -14, 'invert': -3, 'parenthesis': 50, 'precedent operation': True})
         source = """
         {
            "type mismatch": "1"*"2"

@@ -149,6 +149,12 @@ class GrammarDef:
         """
         p[0] = p[1]
 
+    def p_enclosed_expression(self, p):
+        """
+        expression : LPAREN expression RPAREN
+        """
+        p[0] = p[2]
+
     def p_two_place_operation_expression(self, p):
         """
         expression : expression COMPARISON_OP expression
