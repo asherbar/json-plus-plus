@@ -145,6 +145,12 @@ class GrammarDef:
         """
         p[0] = CompoundExpression(operator.add, p[1], p[3])
 
+    def p_minus_expression(self, p):
+        """
+        expression : expression MINUS literal
+        """
+        p[0] = CompoundExpression(operator.sub, p[1], p[3])
+
     def p_ref(self, p):
         """
         ref : REF lookup

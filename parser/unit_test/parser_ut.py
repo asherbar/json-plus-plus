@@ -124,3 +124,24 @@ class ParserUnittest(unittest.TestCase):
         }
         """
         self.assertRaises(TypeError, self.object_under_test.parse, source)
+
+    def test_minus_operator(self):
+        source = """
+        {
+            "minus int": 1-2,
+            "minus float": 1.4 - 2.5,
+            "minus ref": ref["minus int"] - 8,
+            "uneven minus": 1-2-3,
+            "even minus": 1-2-3-4,
+            "int minus float": 1 - 2.5,
+            1 - 3: 14 - 12
+        }
+        """
+        self._verify(source, {'minus int': -1, 'minus float': -1.1, 'minus ref': -9, 'uneven minus': -4,
+                              'even minus': -8, 'int minus float': -1.5, -2: 2})
+        source = """
+        {
+           "type mismatch": 1-"2"
+        }
+        """
+        self.assertRaises(TypeError, self.object_under_test.parse, source)
