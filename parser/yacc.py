@@ -100,7 +100,7 @@ class GrammarDef:
         non_empty_dict_def : LCURL dict_entries RCURL
         """
         p[0] = dict(self._dict_builder)
-        self._dict_builder = {}
+        self._dict_builder.clear()
 
     def p_dict_entries(self, p):
         """
@@ -132,7 +132,7 @@ class GrammarDef:
         ref : REF lookup
         """
         p[0] = ReferencedExpression(list(self._lookup_builder), self._reference_resolver)
-        self._lookup_builder = collections.deque()
+        self._lookup_builder.clear()
 
     def p_lookup(self, p):
         """
@@ -158,7 +158,7 @@ class GrammarDef:
                  | LBRAC list_entries RBRAC
         """
         p[0] = list(self._list_builder)
-        self._list_builder = collections.deque()
+        self._list_builder.clear()
 
     def p_list_entries(self, p):
         """
