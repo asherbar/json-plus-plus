@@ -145,3 +145,25 @@ class ParserUnittest(unittest.TestCase):
         }
         """
         self.assertRaises(TypeError, self.object_under_test.parse, source)
+
+    def test_mul_operator(self):
+        source = """
+        {
+            "mul int": 1*2,
+            "mul float": 1.4 * 2.5,
+            "mul ref": ref["mul int"] * 8,
+            "uneven mul": 1*2*3,
+            "even mul": 1*2*3*4,
+            "int mul float": 1 * 2.5,
+            1 * 3: 14 * 12,
+            "mul strings": "a" * 3
+        }
+        """
+        self._verify(source, {'mul int': 2, 'mul float': 3.5, 'mul ref': 16, 'uneven mul': 6, 'even mul': 24,
+                              'int mul float': 2.5, 3: 168, 'mul strings': 'aaa'})
+        source = """
+        {
+           "type mismatch": "1"*"2"
+        }
+        """
+        self.assertRaises(TypeError, self.object_under_test.parse, source)

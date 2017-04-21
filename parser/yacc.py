@@ -151,6 +151,12 @@ class GrammarDef:
         """
         p[0] = CompoundExpression(operator.sub, p[1], p[3])
 
+    def p_mul_expression(self, p):
+        """
+        expression : expression MUL literal
+        """
+        p[0] = CompoundExpression(operator.mul, p[1], p[3])
+
     def p_ref(self, p):
         """
         ref : REF lookup

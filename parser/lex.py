@@ -27,6 +27,7 @@ tokens = [
     'BOOLEAN',
     'PLUS',
     'MINUS',
+    'MUL',
 ]
 
 tokens.extend(reserved.values())
@@ -44,6 +45,7 @@ t_COMMA = ','
 t_SEMICOLON = ';'
 t_PLUS = r'\+'
 t_MINUS = r'\-'
+t_MUL = r'\*'
 
 
 def t_INTEGER(t):
