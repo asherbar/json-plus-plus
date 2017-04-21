@@ -103,67 +103,38 @@ class ParserUnittest(unittest.TestCase):
         """
         self._verify(source, {'foo': {'bar': {'foobar': [19, 84]}}, 'baz': 84})
 
-    def test_plus_operator(self):
+    def test_operations(self):
         source = """
         {
-            "plus int": 1+2,
-            "plus float": 1.4 + 2.5,
+            "comparison": 1 < 3 < 8 | false & true,
+            "bitwise": 1 & 2 ^ 3 | 4,
+            "bit shift": 1 << 4 >> 2,
+            "plus ints": 1+2+3,
             "plus string": "Hello, " + "World!",
-            "plus ref": ref["plus int"] + 8,
-            "uneven plus": 1+2+3,
-            "even plus": 1+2+3+4,
-            "int plus float": 1 + 2.5,
-            1 + 3: 14 + 12
+            "minus": 1-2-3,
+            "mul": 4 % 6 * 2 // 3 / 4,
+            "mul strings": "a" * 3,
+            "pow": 2 ** 8,
+            "negative": -14,
+            "invert": ~2,
+            "precedent operation": 1 + 2**2 * -3 < 1 + -2**2 * -2
         }
         """
-        self._verify(source, {'plus int': 3, 'plus float': 3.9, 'plus string': 'Hello, World!', 'plus ref': 11,
-                              'uneven plus': 6, 'even plus': 10, 'int plus float': 3.5, 4: 26})
-        source = """
-        {
-           "type mismatch": 1+"2"
-        }
-        """
-        self.assertRaises(TypeError, self.object_under_test.parse, source)
-
-    def test_minus_operator(self):
-        source = """
-        {
-            "minus int": 1-2,
-            "minus float": 1.4 - 2.5,
-            "minus ref": ref["minus int"] - 8,
-            "uneven minus": 1-2-3,
-            "even minus": 1-2-3-4,
-            "int minus float": 1 - 2.5,
-            1 - 3: 14 - 12
-        }
-        """
-        self._verify(source, {'minus int': -1, 'minus float': -1.1, 'minus ref': -9, 'uneven minus': -4,
-                              'even minus': -8, 'int minus float': -1.5, -2: 2})
-        source = """
-        {
-           "type mismatch": 1-"2"
-        }
-        """
-        self.assertRaises(TypeError, self.object_under_test.parse, source)
-
-    def test_mul_operator(self):
-        source = """
-        {
-            "mul int": 1*2,
-            "mul float": 1.4 * 2.5,
-            "mul ref": ref["mul int"] * 8,
-            "uneven mul": 1*2*3,
-            "even mul": 1*2*3*4,
-            "int mul float": 1 * 2.5,
-            1 * 3: 14 * 12,
-            "mul strings": "a" * 3
-        }
-        """
-        self._verify(source, {'mul int': 2, 'mul float': 3.5, 'mul ref': 16, 'uneven mul': 6, 'even mul': 24,
-                              'int mul float': 2.5, 3: 168, 'mul strings': 'aaa'})
+        self._verify(source, {'comparison': True, 'bitwise': 7, 'bit shift': 4, 'plus ints': 6,
+                              'plus string': 'Hello, World!', 'minus': -4, 'mul': 0.5, 'pow': 256, 'mul strings': 'aaa',
+                              'negative': -14, 'invert': -3, 'precedent operation': True})
         source = """
         {
            "type mismatch": "1"*"2"
         }
         """
         self.assertRaises(TypeError, self.object_under_test.parse, source)
+
+    def test_func(self):
+        source = """
+        {
+            "abs": abs(1-2),
+            "bool": bool(3.14) & bool(0)
+        }
+        """
+        self._verify(source, {'abs': 1, 'bool': False})

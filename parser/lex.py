@@ -1,6 +1,9 @@
+import operator
+
 import ply.lex as lex
 
 from parser.expression import Expression
+from parser.operation import Operation
 
 reserved = {
     'extends': 'EXTENDS',
@@ -25,13 +28,18 @@ tokens = [
     'DOT',
     'SEMICOLON',
     'BOOLEAN',
-    'PLUS',
     'MINUS',
-    'MUL',
+    'COMPARISON_OP',
+    'PLUS',
+    'MUL_OP',
+    'BIT_SHIFT_OPS',
+    'BITWISE_OPS',
+    'INVERT',
+    'POW',
+    'FUNC',
 ]
 
 tokens.extend(reserved.values())
-
 
 t_DOT = r'\.'
 t_LCURL = r'\{'
@@ -43,9 +51,75 @@ t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_COMMA = ','
 t_SEMICOLON = ';'
-t_PLUS = r'\+'
-t_MINUS = r'\-'
-t_MUL = r'\*'
+
+
+def _create_operation_token(t):
+    t.value = Operation(t.value)
+    return t
+
+
+def t_BIT_SHIFT_OPS(t):
+    """
+    <<|>>
+    """
+    return _create_operation_token(t)
+
+
+def t_COMPARISON_OP(t):
+    """
+    <|<=|==|!=|>=
+    """
+    return _create_operation_token(t)
+
+
+def t_BITWISE_OPS(t):
+    r"""
+    &|\^|\|
+    """
+    return _create_operation_token(t)
+
+
+def t_PLUS(t):
+    r"""
+    \+
+    """
+    return _create_operation_token(t)
+
+
+def t_MINUS(t):
+    r"""
+    -
+    """
+    t.value = Operation(t.value, operator.sub)
+    return t
+
+
+def t_POW(t):
+    r"""
+    \*\*
+    """
+    return _create_operation_token(t)
+
+
+def t_MUL_OP(t):
+    r"""
+    \*|//|/|%
+    """
+    return _create_operation_token(t)
+
+
+def t_INVERT(t):
+    """
+    ~
+    """
+    return _create_operation_token(t)
+
+
+def t_FUNC(t):
+    """
+    bool|abs
+    """
+    return _create_operation_token(t)
 
 
 def t_INTEGER(t):
@@ -60,7 +134,15 @@ def t_STRING_LITERAL(t):
     """
     "[^"\n]*"
     """
-    t.value = Expression(t.value.strip('"'))
+    t.value = Expression(str(t.value).strip('"'))
+    return t
+
+
+def t_BOOLEAN(t):
+    """
+    true|false
+    """
+    t.value = Expression(t.value == 'true')
     return t
 
 
@@ -80,14 +162,6 @@ def t_COMMENT(t):
     pass
 
 
-def t_BOOLEAN(t):
-    """
-    true|false
-    """
-    t.value = Expression(t.value == 'true')
-    return t
-
-
 def t_newline(t):
     r"""
     \n+
@@ -96,6 +170,5 @@ def t_newline(t):
 
 
 t_ignore = ' \t\n'
-
 
 lexer = lex.lex(debug=False)

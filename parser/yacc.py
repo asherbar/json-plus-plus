@@ -7,6 +7,7 @@ import ply.yacc as yacc
 
 from parser.expression import ReferencedExpression, CompoundExpression, Expression
 from parser.lex import tokens
+from parser.operation import Operation
 from parser.reference_resolver import ReferenceResolver
 
 
@@ -21,6 +22,15 @@ class _UndefinedReference:
 
 
 class GrammarDef:
+    precedence = (
+        ('left', 'COMPARISON_OP', 'BITWISE_OPS'),
+        ('left', 'BIT_SHIFT_OPS'),
+        ('left', 'PLUS', 'MINUS'),
+        ('left', 'MUL_OP'),
+        ('left', 'POW'),
+        ('right', 'UMINUS', 'INVERT'),  # Unary minus operator
+    )
+
     def __init__(self):
         self.yacc = None
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -139,23 +149,35 @@ class GrammarDef:
         """
         p[0] = p[1]
 
-    def p_plus_expression(self, p):
+    def p_two_place_operation_expression(self, p):
         """
-        expression : expression PLUS literal
+        expression : expression COMPARISON_OP expression
+                   | expression BITWISE_OPS expression
+                   | expression BIT_SHIFT_OPS expression
+                   | expression PLUS expression
+                   | expression MINUS expression
+                   | expression MUL_OP expression
+                   | expression POW expression
         """
-        p[0] = CompoundExpression(operator.add, p[1], p[3])
+        p[0] = CompoundExpression(p[2], p[1], p[3])
 
-    def p_minus_expression(self, p):
+    def p_invert_expression(self, p):
         """
-        expression : expression MINUS literal
+        expression : INVERT expression
         """
-        p[0] = CompoundExpression(operator.sub, p[1], p[3])
+        p[0] = CompoundExpression(p[1], p[2])
 
-    def p_mul_expression(self, p):
+    def p_negative_expression(self, p):
         """
-        expression : expression MUL literal
+        expression : MINUS expression %prec UMINUS
         """
-        p[0] = CompoundExpression(operator.mul, p[1], p[3])
+        p[0] = CompoundExpression(Operation('-', operator.neg), p[2])
+
+    def p_function_expression(self, p):
+        """
+        expression : FUNC LPAREN expression RPAREN
+        """
+        p[0] = CompoundExpression(p[1], p[3])
 
     def p_ref(self, p):
         """
