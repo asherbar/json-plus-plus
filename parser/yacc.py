@@ -1,9 +1,11 @@
 import logging
 
 import collections
+import operator
+
 import ply.yacc as yacc
 
-from parser.expression import ReferencedExpression
+from parser.expression import ReferencedExpression, CompoundExpression, Expression
 from parser.lex import tokens
 from parser.reference_resolver import ReferenceResolver
 
@@ -118,14 +120,30 @@ class GrammarDef:
 
     def p_dict_key(self, p):
         """
-        dict_key : STRING_LITERAL
+        dict_key : expression
+        """
+        p[0] = p[1]
+
+    def p_literal(self, p):
+        """
+        literal  : STRING_LITERAL
                  | BOOLEAN
                  | number
                  | ref
         """
-        if not isinstance(p[1], collections.Hashable):
-            self._logger.error('Unhashable dict key: {}, at line {}, column {}'.format(p[1], p.lineno(3), p.lexpos(3)))
         p[0] = p[1]
+
+    def p_literal_expression(self, p):
+        """
+        expression : literal
+        """
+        p[0] = p[1]
+
+    def p_plus_expression(self, p):
+        """
+        expression : expression PLUS literal
+        """
+        p[0] = CompoundExpression(operator.add, p[1], p[3])
 
     def p_ref(self, p):
         """
@@ -175,7 +193,7 @@ class GrammarDef:
         """
         number : INTEGER DOT INTEGER
         """
-        p[0] = float('{}.{}'.format(str(p[1].value), p[3].value))
+        p[0] = Expression(float('{}.{}'.format(str(p[1].value), p[3].value)))
 
     def p_finish(self, _):
         """

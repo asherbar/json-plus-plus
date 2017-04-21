@@ -16,8 +16,8 @@ class CompoundExpression(Expression):
 
     @property
     def value(self):
-        return self._operation(self._expression) if self._expression2 is None \
-            else self._operation(self._expression, self._expression2)
+        return self._operation(self._expression.value) if self._expression2 is None \
+            else self._operation(self._expression.value, self._expression2.value)
 
 
 class ReferencedExpression(Expression):
@@ -35,12 +35,3 @@ class ReferencedExpression(Expression):
         for key in self._value:
             ret = ret[key.value]
         return ret
-
-
-class Operation:
-    pass
-
-
-class OperationPlus(Operation):
-    def __call__(self, exp1, exp2):
-        return exp1.value + exp2.value

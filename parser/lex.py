@@ -24,7 +24,8 @@ tokens = [
     'RPAREN',
     'DOT',
     'SEMICOLON',
-    'BOOLEAN'
+    'BOOLEAN',
+    'PLUS',
 ]
 
 tokens.extend(reserved.values())
@@ -40,6 +41,7 @@ t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_COMMA = ','
 t_SEMICOLON = ';'
+t_PLUS = r'\+'
 
 
 def t_INTEGER(t):

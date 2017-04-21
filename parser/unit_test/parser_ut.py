@@ -102,3 +102,25 @@ class ParserUnittest(unittest.TestCase):
         }
         """
         self._verify(source, {'foo': {'bar': {'foobar': [19, 84]}}, 'baz': 84})
+
+    def test_plus_operator(self):
+        source = """
+        {
+            "plus int": 1+2,
+            "plus float": 1.4 + 2.5,
+            "plus string": "Hello, " + "World!",
+            "plus ref": ref["plus int"] + 8,
+            "uneven plus": 1+2+3,
+            "even plus": 1+2+3+4,
+            "int plus float": 1 + 2.5,
+            1 + 3: 14 + 12
+        }
+        """
+        self._verify(source, {'plus int': 3, 'plus float': 3.9, 'plus string': 'Hello, World!', 'plus ref': 11,
+                              'uneven plus': 6, 'even plus': 10, 'int plus float': 3.5, 4: 26})
+        source = """
+        {
+           "type mismatch": 1+"2"
+        }
+        """
+        self.assertRaises(TypeError, self.object_under_test.parse, source)
