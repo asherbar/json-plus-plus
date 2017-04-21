@@ -143,10 +143,7 @@ class GrammarDef:
 
     def p_dict_val(self, p):
         """
-        dict_val : STRING_LITERAL
-                 | BOOLEAN
-                 | number
-                 | ref
+        dict_val : dict_key
                  | dict_def
                  | list_def
         """
