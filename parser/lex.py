@@ -8,7 +8,7 @@ from parser.operation import Operation
 reserved = {
     'extends': 'EXTENDS',
     'import': 'IMPORT',
-    'ref': 'REF'
+    'local': 'LOCAL'
 }
 
 NAME_TOK = 'NAME'

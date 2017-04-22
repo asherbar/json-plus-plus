@@ -139,7 +139,7 @@ class GrammarDef:
         literal  : STRING_LITERAL
                  | BOOLEAN
                  | number
-                 | ref
+                 | local
         """
         p[0] = p[1]
 
@@ -187,7 +187,7 @@ class GrammarDef:
 
     def p_ref(self, p):
         """
-        ref : REF lookup
+        local : LOCAL lookup
         """
         p[0] = ReferencedExpression(list(self._lookup_builder), self._reference_resolver)
         self._lookup_builder.clear()

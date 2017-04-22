@@ -40,20 +40,20 @@ class ParserUnittest(unittest.TestCase):
         source = """
         {
             "foo": "bar",
-            "ref": ref["foo"]
+            "local": local["foo"]
         }
         """
-        self._verify(source, {'foo': 'bar', 'ref': 'bar'})
+        self._verify(source, {'foo': 'bar', 'local': 'bar'})
 
     def test_recursive_local_ref(self):
         source = """
         {
             "foo": "bar",
-            "foobar": ref["foo"],
-            "ref": ref["foobar"]
+            "foobar": local["foo"],
+            "local": local["foobar"]
         }
         """
-        self._verify(source, {'foo': 'bar', 'foobar': 'bar', 'ref': 'bar'})
+        self._verify(source, {'foo': 'bar', 'foobar': 'bar', 'local': 'bar'})
 
     def test_comment(self):
         source = """
@@ -78,9 +78,9 @@ class ParserUnittest(unittest.TestCase):
             "foo": "bar",
             "bar": "foobar",
             "foobar": "hi",
-            "ref1": ref[ref["foo"]],
+            "ref1": local[local["foo"]],
             "nest": {
-                "ref2": ref[ref[ref["foo"]]]
+                "ref2": local[local[local["foo"]]]
             }
         }
         """
@@ -89,7 +89,7 @@ class ParserUnittest(unittest.TestCase):
     def test_bad_ref(self):
         source = """
         {
-            "foo": ref["bar"]
+            "foo": local["bar"]
         }
         """
         self.assertRaises(NameError, self.object_under_test.parse, source)
@@ -98,7 +98,7 @@ class ParserUnittest(unittest.TestCase):
         source = """
         {
             "foo": {"bar": {"foobar": [19, 84]}},
-            "baz": ref["foo"]["bar"]["foobar"][1]
+            "baz": local["foo"]["bar"]["foobar"][1]
         }
         """
         self._verify(source, {'foo': {'bar': {'foobar': [19, 84]}}, 'baz': 84})
