@@ -60,18 +60,18 @@ class ParserUnittest(unittest.TestCase):
 
     def test_comment(self):
         source = """
-        \\ To be
+        # To be
         {
-            "standard json": { \\ or not to be
+            "standard json": { # or not to be
                 "hello": "world !",
                 "list": [1, 2, 3],
-                \\ that is
+                # that is
                 "number": 3.14,
                 "bool": true
             }
-            \\ the
+            # the
         }
-        \\question
+        #question
         """
         self._verify(source, {'standard json': {'hello': 'world !', 'list': [1, 2, 3], 'number': 3.14, 'bool': True}})
 
@@ -150,7 +150,7 @@ class ParserUnittest(unittest.TestCase):
         {
             "foo": imported["import1"]["foo"],
             "spam": "spam",
-            \\ Make sure local and imported paths can be used together:
+            # Make sure local and imported paths can be used together:
             "bar": imported["import1"][local["spam"]]
         }
 
