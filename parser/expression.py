@@ -20,7 +20,7 @@ class CompoundExpression(Expression):
             else self._operation(self._expression.value, self._expression2.value)
 
 
-class ReferencedExpression(Expression):
+class LocalReferencedExpression(Expression):
     def __init__(self, referenced_expression, reference_resolver):
         super().__init__(referenced_expression)
         self._reference_resolver = reference_resolver
@@ -35,3 +35,13 @@ class ReferencedExpression(Expression):
         for key in self._value:
             ret = ret[key.value]
         return ret
+
+
+class ImportedReferencedExpression(LocalReferencedExpression):
+    def __init__(self, referenced_expression, imports):
+        super().__init__(referenced_expression, None)
+        self._imports = imports
+
+    @property
+    def _namespace(self):
+        return self._imports

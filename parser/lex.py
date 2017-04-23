@@ -8,7 +8,8 @@ from parser.operation import Operation
 reserved = {
     'extends': 'EXTENDS',
     'import': 'IMPORT',
-    'local': 'LOCAL'
+    'local': 'LOCAL',
+    'imported': 'IMPORTED',
 }
 
 NAME_TOK = 'NAME'
@@ -148,7 +149,7 @@ def t_BOOLEAN(t):
 
 def t_NAME(t):
     """
-    (?!true|false)[a-zA-Z_][a-zA-Z_0-9]*
+    [a-zA-Z_][a-zA-Z_0-9]*
     """
     t.type = reserved.get(t.value, NAME_TOK)  # Check for reserved words
     return t
@@ -171,4 +172,6 @@ def t_newline(t):
 
 t_ignore = ' \t\n'
 
-lexer = lex.lex(debug=False)
+
+def create_lexer():
+    return lex.lex(debug=False)

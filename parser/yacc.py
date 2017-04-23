@@ -1,12 +1,11 @@
-import logging
-
 import collections
+import logging
 import operator
 
 import ply.yacc as yacc
 
-from parser.expression import ReferencedExpression, CompoundExpression, Expression
-from parser.lex import tokens
+from parser.expression import LocalReferencedExpression, CompoundExpression, Expression, ImportedReferencedExpression
+from parser.lex import tokens, create_lexer
 from parser.operation import Operation
 from parser.reference_resolver import ReferenceResolver
 
@@ -31,26 +30,33 @@ class GrammarDef:
         ('right', 'UMINUS', 'INVERT'),  # Unary minus operator
     )
 
-    def __init__(self):
+    def __init__(self, importer):
+        self._importer = importer
+        self._imports = {}
         self.yacc = None
         self._logger = logging.getLogger(self.__class__.__name__)
         self._reference_resolver = ReferenceResolver()
         self._dict_builder = {}
         self._list_builder = collections.deque()
-        self._lookup_builder = collections.deque()
+        self._dotted_name_builder = collections.deque()
+        self._curr_lookup_builder = collections.deque()
         self.tokens = tokens
 
     def build(self, **yacc_params):
         self.yacc = yacc.yacc(module=self, **yacc_params)
         return self
 
-    def parse(self, source, **yacc_parser_kwqrgs):
+    def parse(self, source, lexer=None, **yacc_parser_kwqrgs):
         if source:
-            self.yacc.parse(source, **yacc_parser_kwqrgs)
+            self.yacc.parse(source, lexer=create_lexer() if lexer is None else lexer, **yacc_parser_kwqrgs)
 
     @property
     def namespace(self):
         return self._reference_resolver.namespace
+
+    @property
+    def imports(self):
+        return self._imports
 
     def clear_namespace(self):
         self._reference_resolver.clear_namespace()
@@ -68,9 +74,9 @@ class GrammarDef:
 
     def p_doc_with_imports(self, p):
         """
-        doc : global_stmts SEMICOLON dict_def
+        doc : global_stmts dict_def
         """
-        self._reference_resolver.namespace = p[3]
+        self._reference_resolver.namespace = p[2]
 
     def p_global_stmts(self, p):
         """
@@ -87,12 +93,17 @@ class GrammarDef:
         """
         import_stmt : IMPORT dotted_name
         """
+        dotted_name = '.'.join(self._dotted_name_builder)
+        self._imports[dotted_name] = self._importer.import_namespace(dotted_name)
+        self._imports[dotted_name.split('.')[-1]] = self._imports[dotted_name]
+        self._dotted_name_builder.clear()
 
     def p_dotted_name(self, p):
         """
         dotted_name : NAME
                     | NAME DOT dotted_name
         """
+        self._dotted_name_builder.appendleft(p[1])
 
     def p_dict_def(self, p):
         """
@@ -139,7 +150,7 @@ class GrammarDef:
         literal  : STRING_LITERAL
                  | BOOLEAN
                  | number
-                 | local
+                 | ref
         """
         p[0] = p[1]
 
@@ -185,19 +196,26 @@ class GrammarDef:
         """
         p[0] = CompoundExpression(p[1], p[3])
 
-    def p_ref(self, p):
+    def p_local_ref(self, p):
         """
-        local : LOCAL lookup
+        ref : LOCAL lookup
         """
-        p[0] = ReferencedExpression(list(self._lookup_builder), self._reference_resolver)
-        self._lookup_builder.clear()
+        p[0] = LocalReferencedExpression(list(self._curr_lookup_builder), self._reference_resolver)
+        self._curr_lookup_builder.clear()
+
+    def p_imported_ref(self, p):
+        """
+        ref : IMPORTED lookup
+        """
+        p[0] = ImportedReferencedExpression(list(self._curr_lookup_builder), self._imports)
+        self._curr_lookup_builder.clear()
 
     def p_lookup(self, p):
         """
         lookup : LBRAC dict_key RBRAC
                | LBRAC dict_key RBRAC lookup
         """
-        self._lookup_builder.appendleft(p[2])
+        self._curr_lookup_builder.appendleft(p[2])
 
     def p_dict_val(self, p):
         """

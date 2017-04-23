@@ -2,11 +2,14 @@ import json
 import os
 import unittest
 
+from parser import importer
+from parser.path_resolver import JPP_PATH
 from parser.yacc import GrammarDef
 
 
 class ParserUnittest(unittest.TestCase):
-    object_under_test = GrammarDef().build()
+    os.environ[JPP_PATH] = os.path.dirname(os.path.realpath(__file__))
+    object_under_test = GrammarDef(importer.get_importer()).build()
 
     def setUp(self):
         self.object_under_test.clear_namespace()
@@ -98,10 +101,11 @@ class ParserUnittest(unittest.TestCase):
         source = """
         {
             "foo": {"bar": {"foobar": [19, 84]}},
-            "baz": local["foo"]["bar"]["foobar"][1]
+            "spam": "bar",
+            "baz": local["foo"][local["spam"]]["foobar"][1]
         }
         """
-        self._verify(source, {'foo': {'bar': {'foobar': [19, 84]}}, 'baz': 84})
+        self._verify(source, {'foo': {'bar': {'foobar': [19, 84]}}, "spam": "bar", 'baz': 84})
 
     def test_operations(self):
         source = """
@@ -139,3 +143,16 @@ class ParserUnittest(unittest.TestCase):
         }
         """
         self._verify(source, {'abs': 1, 'bool': False})
+
+    def test_import(self):
+        source = """
+        import import1;
+        {
+            "foo": imported["import1"]["foo"],
+            "spam": "spam",
+            \\ Make sure local and imported paths can be used together:
+            "bar": imported["import1"][local["spam"]]
+        }
+
+        """
+        self._verify(source, {'foo': 'bar', 'spam': 'spam', 'bar': 'egg'})
