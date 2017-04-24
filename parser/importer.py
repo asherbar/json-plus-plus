@@ -1,5 +1,4 @@
 from parser.path_resolver import PathResolver
-from parser.yacc import GrammarDef
 
 
 class _Importer:
@@ -23,11 +22,19 @@ class _Importer:
         self._cache[dotted_name] = self._resolve_namespace(dotted_name)
         return self._cache[dotted_name]
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._current_importing_dependencies.clear()
+        self._current_importing_dependencies_path.clear()
+
     def _resolve_namespace(self, dotted_name):
         path = self._path_resolver.resolve_path(dotted_name)
         with open(path) as fp:
             source = fp.read()
-        grammar_def = GrammarDef(self).build()
+        from parser.yacc import GrammarDef
+        grammar_def = GrammarDef().build()
         grammar_def.parse(source)
         return grammar_def.namespace
 

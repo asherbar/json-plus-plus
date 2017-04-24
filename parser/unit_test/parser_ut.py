@@ -2,14 +2,13 @@ import json
 import os
 import unittest
 
-from parser import importer
 from parser.path_resolver import JPP_PATH
 from parser.yacc import GrammarDef
 
 
 class ParserUnittest(unittest.TestCase):
     os.environ[JPP_PATH] = os.path.dirname(os.path.realpath(__file__))
-    object_under_test = GrammarDef(importer.get_importer()).build()
+    object_under_test = GrammarDef().build()
 
     def setUp(self):
         self.object_under_test.clear_namespace()
@@ -153,6 +152,14 @@ class ParserUnittest(unittest.TestCase):
             # Make sure local and imported paths can be used together:
             "bar": imported["import1"][local["spam"]]
         }
-
         """
         self._verify(source, {'foo': 'bar', 'spam': 'spam', 'bar': 'egg'})
+
+        source = """
+        # circular1 depends on circular2, which depends on circular1
+        import circular1;
+        {}
+        """
+        with self.assertRaises(ImportError) as cm:
+            self.object_under_test.parse(source)
+        self.assertEqual('Circular dependency: circular1 --> circular2 --> circular1', cm.exception.msg)

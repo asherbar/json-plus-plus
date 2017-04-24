@@ -5,6 +5,7 @@ import operator
 import ply.yacc as yacc
 
 from parser.expression import LocalReferencedExpression, CompoundExpression, Expression, ImportedReferencedExpression
+from parser.importer import get_importer
 from parser.lex import tokens, create_lexer
 from parser.operation import Operation
 from parser.reference_resolver import ReferenceResolver
@@ -30,8 +31,7 @@ class GrammarDef:
         ('right', 'UMINUS', 'INVERT'),  # Unary minus operator
     )
 
-    def __init__(self, importer):
-        self._importer = importer
+    def __init__(self):
         self._imports = {}
         self.yacc = None
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -94,7 +94,8 @@ class GrammarDef:
         import_stmt : IMPORT dotted_name
         """
         dotted_name = '.'.join(self._dotted_name_builder)
-        self._imports[dotted_name] = self._importer.import_namespace(dotted_name)
+        with get_importer() as importer:
+            self._imports[dotted_name] = importer.import_namespace(dotted_name)
         self._imports[dotted_name.split('.')[-1]] = self._imports[dotted_name]
         self._dotted_name_builder.clear()
 
