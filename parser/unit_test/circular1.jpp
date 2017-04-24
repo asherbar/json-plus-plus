@@ -1,0 +1,5 @@
+import circular2;
+{
+    "foo": "bar",
+    "spam": "egg"
+}
