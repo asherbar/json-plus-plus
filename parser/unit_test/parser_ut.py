@@ -3,7 +3,7 @@ import os
 import unittest
 
 from parser.path_resolver import JPP_PATH
-from parser.yacc import GrammarDef
+from parser.grammar_def import GrammarDef
 
 
 class ParserUnittest(unittest.TestCase):
