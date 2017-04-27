@@ -1,4 +1,14 @@
+class UnableToResolveValue(KeyError):
+    pass
+
+
 class Expression:
+    @property
+    def value(self):
+        raise NotImplementedError()
+
+
+class SimpleExpression(Expression):
     def __init__(self, value):
         self._value = value
 
@@ -9,7 +19,7 @@ class Expression:
 
 class CompoundExpression(Expression):
     def __init__(self, operation, expression, expression2=None):
-        super().__init__(None)
+        super().__init__()
         self._operation = operation
         self._expression = expression
         self._expression2 = expression2
@@ -22,7 +32,8 @@ class CompoundExpression(Expression):
 
 class LocalReferencedExpression(Expression):
     def __init__(self, referenced_expression, reference_resolver):
-        super().__init__(referenced_expression)
+        super().__init__()
+        self._referenced_expression = referenced_expression
         self._reference_resolver = reference_resolver
 
     @property
@@ -32,7 +43,7 @@ class LocalReferencedExpression(Expression):
     @property
     def value(self):
         ret = self._namespace
-        for key in self._value:
+        for key in self._referenced_expression:
             ret = ret[key.value]
         return ret
 
@@ -45,3 +56,22 @@ class ImportedReferencedExpression(LocalReferencedExpression):
     @property
     def _namespace(self):
         return self._imports
+
+
+class ExtendsExpression(Expression):
+    def __init__(self, base_expression, extended_value):
+        super().__init__()
+        self._base_expression = base_expression
+        self._extended_value = extended_value
+        if not isinstance(self._extended_value, dict):
+            raise TypeError('Type {} cannot be extended (must be of type dict)'.format(type(self._extended_value)))
+
+    @property
+    def value(self):
+        base_dict = self._base_expression.value
+        if not isinstance(base_dict, dict):
+            raise TypeError('Unable to extend type {} (must be of type dict)'.format(type(base_dict)))
+        base_dict = dict(base_dict)
+        self._extended_value = {k.value if isinstance(k, Expression) else k: v for k, v in self._extended_value.items()}
+        base_dict.update(self._extended_value)
+        return base_dict

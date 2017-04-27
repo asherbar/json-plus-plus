@@ -163,3 +163,20 @@ class ParserUnittest(unittest.TestCase):
         with self.assertRaises(ImportError) as cm:
             self.object_under_test.parse(source)
         self.assertEqual('Circular dependency: circular1 --> circular2 --> circular1', cm.exception.msg)
+
+    def test_extends(self):
+        source = """
+        {
+            "base": {
+                "a": "base a",
+                "b": "base b",
+            },
+            "ext" extends local["base"]: {
+                "b": "ext b",
+                "c": "ext c",
+            }
+        }
+        """
+        self._verify(
+            source, {'base': {'a': 'base a', 'b': 'base b'}, 'ext': {'a': 'base a', 'b': 'ext b', 'c': 'ext c'}}
+        )

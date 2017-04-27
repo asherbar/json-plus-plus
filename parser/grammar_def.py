@@ -4,11 +4,12 @@ import operator
 
 import ply.yacc as yacc
 
-from parser.expression import LocalReferencedExpression, CompoundExpression, Expression, ImportedReferencedExpression
+from parser.expression import LocalReferencedExpression, CompoundExpression, SimpleExpression, \
+    ImportedReferencedExpression, ExtendsExpression
 from parser.importer import get_importer
 from parser.lex import tokens, create_lexer
 from parser.operation import Operation
-from parser.reference_resolver import ReferenceResolver
+from parser.reference_resolver import NamespaceResolver
 
 
 class _UndefinedReference:
@@ -35,7 +36,7 @@ class GrammarDef:
         self._imports = {}
         self.yacc = None
         self._logger = logging.getLogger(self.__class__.__name__)
-        self._reference_resolver = ReferenceResolver()
+        self._reference_resolver = NamespaceResolver()
         self._dict_builder = {}
         self._list_builder = collections.deque()
         self._dotted_name_builder = collections.deque()
@@ -139,6 +140,12 @@ class GrammarDef:
         dict_entry : dict_key COLON dict_val
         """
         p[0] = (p[1], p[3])
+
+    def p_extended_dict_entry(self, p):
+        """
+        dict_entry : dict_key EXTENDS dict_key COLON dict_def
+        """
+        p[0] = (p[1], ExtendsExpression(p[3], p[5]))
 
     def p_dict_key(self, p):
         """
@@ -252,7 +259,7 @@ class GrammarDef:
         """
         number : INTEGER DOT INTEGER
         """
-        p[0] = Expression(float('{}.{}'.format(str(p[1].value), p[3].value)))
+        p[0] = SimpleExpression(float('{}.{}'.format(str(p[1].value), p[3].value)))
 
     def p_finish(self, _):
         """

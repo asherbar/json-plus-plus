@@ -2,7 +2,7 @@ import operator
 
 import ply.lex as lex
 
-from parser.expression import Expression
+from parser.expression import SimpleExpression
 from parser.operation import Operation
 
 reserved = {
@@ -127,7 +127,7 @@ def t_INTEGER(t):
     r"""
     \d+
     """
-    t.value = Expression(int(t.value))
+    t.value = SimpleExpression(int(t.value))
     return t
 
 
@@ -135,7 +135,7 @@ def t_STRING_LITERAL(t):
     """
     "[^"\n]*"
     """
-    t.value = Expression(str(t.value).strip('"'))
+    t.value = SimpleExpression(str(t.value).strip('"'))
     return t
 
 
@@ -143,7 +143,7 @@ def t_BOOLEAN(t):
     """
     true|false
     """
-    t.value = Expression(t.value == 'true')
+    t.value = SimpleExpression(t.value == 'true')
     return t
 
 
