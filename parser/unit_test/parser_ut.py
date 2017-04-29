@@ -167,9 +167,11 @@ class ParserUnittest(unittest.TestCase):
     def test_extends(self):
         source = """
         {
+            "some value": 3,
             "base": {
                 "a": "base a",
                 "b": "base b",
+                "ref": local["some value"]
             },
             "ext" extends local["base"]: {
                 "b": "ext b",
@@ -178,5 +180,10 @@ class ParserUnittest(unittest.TestCase):
         }
         """
         self._verify(
-            source, {'base': {'a': 'base a', 'b': 'base b'}, 'ext': {'a': 'base a', 'b': 'ext b', 'c': 'ext c'}}
+            source,
+            {
+                'some value': 3,
+                'base': {'a': 'base a', 'b': 'base b', 'ref': 3},
+                'ext': {'a': 'base a', 'b': 'ext b', 'c': 'ext c', 'ref': 3}
+            }
         )
