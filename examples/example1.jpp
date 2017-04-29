@@ -1,39 +1,39 @@
-// Comments support
+# Comments support
 
-// Referencing values in other files
+# Referencing values in other files
 import other.jpp;
 
-// All data besides imports must be inside the global scope
+# All data besides imports must be inside the global scope
 {
 
-    // Any standard JSON will do
+    # Any standard JSON will do
     "standard json": {
         "hello": "world",
         "list": [1, 2, 3],
         "number": 3.14,
     }
 
-    // Referencing other local values
+    # Referencing other local values
     "local ref example": {
         "some val": 8,
-        "same val": ref["some val"],  // evaluates "some val" to 8
+        "same val": local["some val"],  # evaluates "some val" to 8
         "nested": {
             "some val": 17
         },
-        "nested_ref": ref["nested"]["some val"]  // evaluates to 17
+        "nested_ref": local["nested"]["some val"]  # evaluates to 17
     }
 
-    "remote ref example": {
-        "value from other file": ref["jpp"]["some val"]
+    "remote import example": {
+        "value from other file": import["jpp"]["some val"]
     }
 
-    // Dictionary extending
+    # Dictionary extending
     "base dict": {
         "foo": 3
     }
 
-    // "sub dict" has 2 entries: "foo": 3 and "bar": 12
-    "sub dict" extends ref["base dict"]: {
+    # "sub dict" has 2 entries: "foo": 3 and "bar": 12
+    "sub dict" extends local["base dict"]: {
         "bar": 12
     }
 }
