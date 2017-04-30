@@ -8,10 +8,9 @@ from parser.grammar_def import GrammarDef
 
 class ParserUnittest(unittest.TestCase):
     os.environ[JPP_PATH] = os.path.dirname(os.path.realpath(__file__))
-    object_under_test = GrammarDef().build()
 
     def setUp(self):
-        self.object_under_test.clear_namespace()
+        self.object_under_test = GrammarDef().build()
 
     def _verify(self, source, expected_namespace):
         self.object_under_test.parse(source)
@@ -187,3 +186,16 @@ class ParserUnittest(unittest.TestCase):
                 'ext': {'a': 'base a', 'b': 'ext b', 'c': 'ext c', 'ref': 3}
             }
         )
+
+    def test_user_input(self):
+        user_inputs = {
+            'name': 'Charlie'
+        }
+        self.object_under_test = GrammarDef(user_inputs).build()
+
+        source = """
+        {
+            "name": user_input["name"] + " Brown"
+        }
+        """
+        self._verify(source, {'name': 'Charlie Brown'})

@@ -13,9 +13,10 @@ DIRNAME = os.path.dirname(os.path.realpath(__file__))
 def create_arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('file', help='Path to main JSON++ file', default='main.jpp')
-    parser.add_argument('-p', '--path', type=list, nargs='+', help='One or more path to add to JSON++ path', default=())
+    parser.add_argument('-p', '--path', type=list, nargs='+', help='One or more path to add to JSON++ path', default=[])
     parser.add_argument('-c', '--compact-print', action='store_true',
                         help='If specified, will print the most compact version')
+    parser.add_argument('-u', '--user_input', type=json.loads, help='Optional user input values', default={})
     return parser
 
 
@@ -28,7 +29,7 @@ def main():
     os.environ[JPP_PATH] = PATH_SPLITTER.join([DIRNAME] + args.path if args.path else [])
     if jpp_path_bk:
         os.environ[JPP_PATH] += PATH_SPLITTER + jpp_path_bk
-    jpp_parser = GrammarDef().build(debug=False, optimize=True, write_tables=False)
+    jpp_parser = GrammarDef(args.user_input).build(debug=False, optimize=True, write_tables=False)
     json_args = {}
     if args.compact_print:
         json_args['separators'] = (',', ':')

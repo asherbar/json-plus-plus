@@ -58,6 +58,16 @@ class ImportedReferencedExpression(LocalReferencedExpression):
         return self._imports
 
 
+class UserInputReferencedExpression(LocalReferencedExpression):
+    def __init__(self, referenced_expression, user_inputs):
+        super().__init__(referenced_expression, None)
+        self._user_inputs = user_inputs
+
+    @property
+    def _namespace(self):
+        return self._user_inputs
+
+
 class ExtendsExpression(Expression):
     def __init__(self, base_expression, extended_value):
         super().__init__()

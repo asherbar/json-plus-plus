@@ -5,7 +5,7 @@ import operator
 import ply.yacc as yacc
 
 from parser.expression import LocalReferencedExpression, CompoundExpression, SimpleExpression, \
-    ImportedReferencedExpression, ExtendsExpression
+    ImportedReferencedExpression, ExtendsExpression, UserInputReferencedExpression
 from parser.importer import get_importer
 from parser.lex import tokens, create_lexer
 from parser.operation import Operation
@@ -32,7 +32,8 @@ class GrammarDef:
         ('right', 'UMINUS', 'INVERT'),  # Unary minus operator
     )
 
-    def __init__(self):
+    def __init__(self, user_inputs=None):
+        self._user_inputs = {} if user_inputs is None else user_inputs
         self._imports = {}
         self.yacc = None
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -58,6 +59,10 @@ class GrammarDef:
     @property
     def imports(self):
         return self._imports
+
+    @property
+    def user_inputs(self):
+        return self._user_inputs
 
     def clear_namespace(self):
         self._reference_resolver.clear_namespace()
@@ -216,6 +221,13 @@ class GrammarDef:
         ref : IMPORTED lookup
         """
         p[0] = ImportedReferencedExpression(list(self._curr_lookup_builder), self._imports)
+        self._curr_lookup_builder.clear()
+
+    def p_user_input_ref(self, p):
+        """
+        ref : USER_INPUT lookup
+        """
+        p[0] = UserInputReferencedExpression(list(self._curr_lookup_builder), self._user_inputs)
         self._curr_lookup_builder.clear()
 
     def p_lookup(self, p):

@@ -10,6 +10,7 @@ reserved = {
     'import': 'IMPORT',
     'local': 'LOCAL',
     'imported': 'IMPORTED',
+    'user_input': 'USER_INPUT',
 }
 
 NAME_TOK = 'NAME'
