@@ -6,7 +6,7 @@ with open('requirements.txt') as req_fp:
 setup(
     name='jpp',
     version='0.0.2',
-    packages=['jpp'],
+    packages=['jpp', 'jpp.parser'],
     url='https://github.com/asherbar/json-plus-plus/archive/0.0.2.tar.gz',
     license='MIT',
     author='asherbar',
