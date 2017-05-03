@@ -3,9 +3,9 @@ from distutils.core import setup
 
 setup(
     name='jpp',
-    version='0.0.2.1',
+    version='0.0.2.2',
     packages=['jpp', 'jpp.parser'],
-    url='https://github.com/asherbar/json-plus-plus/archive/0.0.2.1.tar.gz',
+    url='https://github.com/asherbar/json-plus-plus/archive/0.0.2.2.tar.gz',
     license='MIT',
     author='asherbar',
     author_email='asherbare@gmail.com',
