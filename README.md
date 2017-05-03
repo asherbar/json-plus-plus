@@ -7,7 +7,7 @@ An extension of JSON with an emphasis on reusability
 For example, the following will write to stdout the generation of a json based on the given jpp file, `ex.jpp`:  
 `jpp ex.jpp`
 ## Features (see [unit-tests](jpp/parser/unit_test/parser_ut.py) for more)   
-Perhaps an example is the best way to show the supported features of JSON++.  Assuming the following is the contents of `ex.jpp`:  
+Perhaps an [example](examples) is the best way to show the supported features of JSON++.  Assuming the following is the contents of `ex.jpp`:
 ```
 # Comments support
 
@@ -57,7 +57,7 @@ import other;
 }
 ```
 
-Then executing `jpp jpp.ex` will print the following to the standard output:  
+Then executing `jpp ex.jpp` will print the following to the standard output:
 ```
 {
     "sub dict": {
