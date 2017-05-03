@@ -2,8 +2,9 @@ import json
 import os
 import unittest
 
-from parser.path_resolver import JPP_PATH
-from parser.grammar_def import GrammarDef
+from jpp.parser.grammar_def import GrammarDef
+
+from jpp.parser.path_resolver import JPP_PATH
 
 
 class ParserUnittest(unittest.TestCase):

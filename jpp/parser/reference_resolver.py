@@ -1,6 +1,6 @@
 import logging
 
-from parser.expression import Expression
+from jpp.parser.expression import Expression
 
 
 class NamespaceResolver:

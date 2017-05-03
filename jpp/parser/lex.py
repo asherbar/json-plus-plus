@@ -1,9 +1,9 @@
 import operator
 
 import ply.lex as lex
+from jpp.parser.operation import Operation
 
-from parser.expression import SimpleExpression
-from parser.operation import Operation
+from jpp.parser.expression import SimpleExpression
 
 reserved = {
     'extends': 'EXTENDS',

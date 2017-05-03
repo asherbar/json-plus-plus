@@ -2,10 +2,9 @@ import argparse
 import json
 import os
 
+from jpp.grammar_def import GrammarDef
 
-from parser.grammar_def import GrammarDef
-from parser.path_resolver import JPP_PATH, PATH_SPLITTER
-
+from jpp.parser.path_resolver import JPP_PATH, PATH_SPLITTER
 
 DIRNAME = os.path.dirname(os.path.realpath(__file__))
 

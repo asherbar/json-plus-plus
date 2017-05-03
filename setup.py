@@ -1,9 +1,9 @@
 from distutils.core import setup
 
 setup(
-    name='json_pp',
+    name='jpp',
     version='0.0.1',
-    packages=['parser', 'parser.unit_test'],
+    packages=['jpp'],
     url='https://github.com/asherbar/json-plus-plus/archive/0.0.1.tar.gz',
     license='MIT',
     author='asherbar',

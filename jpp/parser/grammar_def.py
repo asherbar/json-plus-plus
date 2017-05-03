@@ -3,13 +3,13 @@ import logging
 import operator
 
 import ply.yacc as yacc
+from jpp.parser.importer import get_importer
+from jpp.parser.lex import tokens, create_lexer
+from jpp.parser.operation import Operation
+from jpp.parser.reference_resolver import NamespaceResolver
 
-from parser.expression import LocalReferencedExpression, CompoundExpression, SimpleExpression, \
+from jpp.parser.expression import LocalReferencedExpression, CompoundExpression, SimpleExpression, \
     ImportedReferencedExpression, ExtendsExpression, UserInputReferencedExpression
-from parser.importer import get_importer
-from parser.lex import tokens, create_lexer
-from parser.operation import Operation
-from parser.reference_resolver import NamespaceResolver
 
 
 class _UndefinedReference:

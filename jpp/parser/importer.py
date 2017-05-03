@@ -1,4 +1,4 @@
-from parser.path_resolver import PathResolver
+from jpp.parser.path_resolver import PathResolver
 
 
 class _Importer:
@@ -33,7 +33,7 @@ class _Importer:
         path = self._path_resolver.resolve_path(dotted_name)
         with open(path) as fp:
             source = fp.read()
-        from parser.grammar_def import GrammarDef
+        from jpp.parser.grammar_def import GrammarDef
         grammar_def = GrammarDef().build()
         grammar_def.parse(source)
         return grammar_def.namespace
