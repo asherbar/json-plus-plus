@@ -1,7 +1,5 @@
 from distutils.core import setup
 
-with open('requirements.txt') as req_fp:
-    requirements = req_fp.read().split('\n')
 
 setup(
     name='jpp',
@@ -12,7 +10,7 @@ setup(
     author='asherbar',
     author_email='asherbare@gmail.com',
     description='An extension of JSON with an emphasis on reusability',
-    install_requires=requirements,
+    install_requires=['ply'],
     entry_points={
         'console_scripts': [
             'jpp=jpp.cli:main',
