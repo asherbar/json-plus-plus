@@ -1,6 +1,6 @@
 # json++
 An extension of JSON with an emphasis on reusability 
-## Installation
+## Installation (requires [pip](https://pypi.python.org/pypi/pip))
 `pip install jpp`
 ## CLI Usage
 `jpp [-h] [-p PATH [PATH ...]] [-c] [-u USER_INPUT] file`  
