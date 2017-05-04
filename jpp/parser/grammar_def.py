@@ -22,6 +22,33 @@ class _UndefinedReference:
         return '"{}" at line {}, column {}'.format(self.name, self.line_no, self.line_pos)
 
 
+# noinspection PyClassHasNoInit
+class SyntaxErrorMsg(collections.namedtuple('SyntaxErrorMsg', ['source_line', 'line_no', 'pos_no'])):
+    _MAX_SOURCE_LEN = 50
+
+    def __str__(self):
+        return 'Syntax Error at line {}:{}.\n{}'.format(self.line_no, self.pos_no, self._get_snipped_source_line())
+
+    def _get_snipped_source_line(self):
+        pos_delta = self._MAX_SOURCE_LEN // 2
+        start = max(0, self.pos_no - pos_delta)
+        end = self.pos_no + pos_delta
+        ret = self.source_line[start:end]
+        carrot_pos = pos_delta
+        padding = '...'
+        if start > 0:
+            ret = padding + ret
+            carrot_pos += len(padding)
+        if end < len(self.source_line):
+            ret += padding
+        return '{}\n{}'.format(ret, ' '*(carrot_pos - 1) + '^')
+
+
+class SyntaxErrorAtEof:
+    def __str__(self):
+        return 'Syntax Error: Unexpected end of file'
+
+
 class GrammarDef:
     precedence = (
         ('left', 'COMPARISON_OP', 'BITWISE_OPS'),
@@ -43,14 +70,18 @@ class GrammarDef:
         self._dotted_name_builder = collections.deque()
         self._curr_lookup_builder = collections.deque()
         self.tokens = tokens
+        self._source = ''
+        self._split_source = []
 
     def build(self, **yacc_params):
         self.yacc = yacc.yacc(module=self, **yacc_params)
         return self
 
-    def parse(self, source, lexer=None, **yacc_parser_kwqrgs):
+    def parse(self, source, lexer=None, **yacc_parser_kwargs):
         if source:
-            self.yacc.parse(source, lexer=create_lexer() if lexer is None else lexer, **yacc_parser_kwqrgs)
+            self._source = source
+            self._split_source = source.split('\n')
+            self.yacc.parse(source, lexer=create_lexer() if lexer is None else lexer, **yacc_parser_kwargs)
 
     @property
     def namespace(self):
@@ -66,6 +97,21 @@ class GrammarDef:
 
     def clear_namespace(self):
         self._reference_resolver.clear_namespace()
+
+    def _get_source_line(self, line_no):
+        return self._split_source[line_no]
+
+    def p_error(self, p):
+        if p:  # I.e., not EOF
+            column_pos = self._get_column(p)-1
+            err_msg = SyntaxErrorMsg(self._get_source_line(p.lineno-1), p.lineno, column_pos)
+            log_msg = 'Syntax error at {}:{}'.format(p.lineno, column_pos)
+        else:
+            err_msg = SyntaxErrorAtEof()
+            log_msg = 'Syntax error at EOF'
+        self._logger.error(log_msg)
+        raise SyntaxError(str(err_msg))
+
 
     def p_start(self, _):
         """
@@ -281,3 +327,10 @@ class GrammarDef:
 
     def _resolve_references(self):
         self._reference_resolver.resolve_references()
+
+    def _get_column(self, token):
+        last_cr = self._source.rfind('\n', 0, token.lexpos)
+        if last_cr < 0:
+            last_cr = 0
+        column = (token.lexpos - last_cr) + 1
+        return column

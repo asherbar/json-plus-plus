@@ -2,8 +2,8 @@ import json
 import os
 import unittest
 
+from jpp.cli import yacc_default_init_args, yacc_default_parse_args
 from jpp.parser.grammar_def import GrammarDef
-
 from jpp.parser.path_resolver import JPP_PATH
 
 
@@ -11,10 +11,10 @@ class ParserUnittest(unittest.TestCase):
     os.environ[JPP_PATH] = os.path.dirname(os.path.realpath(__file__))
 
     def setUp(self):
-        self.object_under_test = GrammarDef().build()
+        self.object_under_test = GrammarDef().build(**yacc_default_init_args)
 
     def _verify(self, source, expected_namespace):
-        self.object_under_test.parse(source)
+        self.object_under_test.parse(source, **yacc_default_parse_args)
         self.assertEqual(self.object_under_test.namespace, expected_namespace)
 
     def test_empty_doc(self):
@@ -200,3 +200,18 @@ class ParserUnittest(unittest.TestCase):
         }
         """
         self._verify(source, {'name': 'Charlie Brown'})
+
+    def test_syntax_error_msg(self):
+        source = """
+
+        {
+            "syntax error": (}
+        }
+        """
+        with self.assertRaises(SyntaxError) as cm:
+            self._verify(source, {})
+        expected_err_msg = """Syntax Error at line 4:30.
+...       "syntax error": (}
+                           ^"""
+        self.assertEqual(cm.exception.msg,
+                         expected_err_msg)

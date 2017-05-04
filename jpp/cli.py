@@ -9,6 +9,10 @@ from jpp.parser.path_resolver import JPP_PATH, PATH_SPLITTER
 DIRNAME = os.path.dirname(os.path.realpath(__file__))
 
 
+yacc_default_init_args = {'debug': False, 'optimize': True, 'write_tables': False}
+yacc_default_parse_args = {'tracking': True}
+
+
 def create_arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('file', help='Path to main JSON++ file', default='main.jpp')
@@ -28,13 +32,13 @@ def main():
     os.environ[JPP_PATH] = PATH_SPLITTER.join([DIRNAME] + args.path if args.path else [])
     if jpp_path_bk:
         os.environ[JPP_PATH] += PATH_SPLITTER + jpp_path_bk
-    jpp_parser = GrammarDef(args.user_input).build(debug=False, optimize=True, write_tables=False)
+    jpp_parser = GrammarDef(args.user_input).build(**yacc_default_init_args)
     json_args = {}
     if args.compact_print:
         json_args['separators'] = (',', ':')
     else:
         json_args['indent'] = 4
-    jpp_parser.parse(source)
+    jpp_parser.parse(source, **yacc_default_parse_args)
     print(json.dumps(jpp_parser.namespace, **json_args))
 
 

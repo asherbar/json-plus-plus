@@ -171,7 +171,7 @@ def t_newline(t):
     t.lexer.lineno += len(t.value)
 
 
-t_ignore = ' \t\n'
+t_ignore = ' \t'
 
 
 def create_lexer():
