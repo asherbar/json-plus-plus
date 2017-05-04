@@ -171,6 +171,10 @@ def t_newline(t):
     t.lexer.lineno += len(t.value)
 
 
+def t_error(_):
+    return
+
+
 t_ignore = ' \t'
 
 
