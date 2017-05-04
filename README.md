@@ -21,11 +21,11 @@ optional arguments:
 Write to stdout the generation of a json based on the given jpp file, `ex.jpp`:
 `jpp ex.jpp`
 ### Add to path
-`--path` option allows users to add specific locations to [JPP_PATH](#JPP_PATH)
+`--path` option allows users to add specific locations to [JPP_PATH](#jpp_path)
 ### Print format
 if the `--compact-print` option is given, the result JSON is printed in the most compact fashion.
 ### User Input
-`--user_input` allows users to pass input, in JSON format, via CLI. See [User input](#User-input)
+`--user_input` allows users to pass input, in JSON format, via CLI. See [User input](#user-input-1)
 ## Features (see [unit-tests](jpp/parser/unit_test/parser_ut.py) for more)   
 Perhaps an [example](examples) is the best way to show the supported features of JSON++.  Assuming the following is the contents of `ex.jpp`:
 ```
