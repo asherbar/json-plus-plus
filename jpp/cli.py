@@ -16,6 +16,11 @@ yacc_default_parse_args = {'tracking': True}
 def create_arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('file', help='Path to main JSON++ file', default='main.jpp')
+    try:
+        from __version__ import __version__
+    except ImportError:
+        __version__ = 'UNKNOWN: Unable to find __version__ file'
+    parser.add_argument('--version', action='version', version='%(prog)s {}'.format(__version__))
     parser.add_argument('-p', '--path', type=list, nargs='+', help='One or more path to add to JSON++ path', default=[])
     parser.add_argument('-c', '--compact-print', action='store_true',
                         help='If specified, will print the most compact version')
