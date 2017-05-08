@@ -1,7 +1,7 @@
 import os
 from distutils.core import setup
 
-VERSION = '0.0.2.3'
+VERSION = '0.0.2.4'
 
 CURR_DIR = os.path.dirname(os.path.abspath(__file__))
 
