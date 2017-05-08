@@ -7,9 +7,6 @@ CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 class TestCli(unittest.TestCase):
-    def getTestCaseNames(self):
-        pass
-
     # Naming makes sure this test is run first. There's no reason to run the rest of the tests if installation failed
     def test00_installation(self):
         self.assertEqual(subprocess.call(['jpp', '--version']), 0, 'jpp not installed. Please run "pip install jpp" '
