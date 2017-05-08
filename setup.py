@@ -1,18 +1,12 @@
-import os
 from distutils.core import setup
 
-VERSION = '0.0.2.5'
-
-CURR_DIR = os.path.dirname(os.path.abspath(__file__))
-
-with open(os.path.join(CURR_DIR, '__version__.py'), 'w') as version_fp:
-    version_fp.write('__version__ = "{}"\n'.format(VERSION))
+VERSION = '0.0.2.6'
 
 
 setup(
     name='jpp',
     version=VERSION,
-    packages=['jpp', 'jpp.parser'],
+    packages=['jpp', 'jpp.parser', 'jpp.cli_test', 'jpp.cli_test.sub_path'],
     url='https://github.com/asherbar/json-plus-plus/archive/{}.tar.gz'.format(VERSION),
     license='MIT',
     author='asherbar',
