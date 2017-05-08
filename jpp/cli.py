@@ -24,7 +24,7 @@ def create_arg_parser():
     parser.add_argument('-p', '--path', type=list, nargs='+', help='One or more path to add to JSON++ path', default=[])
     parser.add_argument('-c', '--compact-print', action='store_true',
                         help='If specified, will print the most compact version')
-    parser.add_argument('-u', '--user_input', type=json.loads, help='Optional user input values', default={})
+    parser.add_argument('-u', '--user-input', type=json.loads, help='Optional user input values', default={})
     return parser
 
 
