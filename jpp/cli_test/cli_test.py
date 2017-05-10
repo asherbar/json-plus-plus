@@ -18,7 +18,7 @@ class TestCli(unittest.TestCase):
             FileDef('compact_test.jpp', '{\n"many": 1, \n"lines": 2\n}', ''),
             FileDef('main.jpp', '', ''),
             FileDef('other.jpp', '', ''),
-            FileDef('compact_test.jpp', '{"foo": user_input["bar"]}', ''),
+            FileDef('user_input_test.jpp', '{"foo": user_input["bar"]}', ''),
             FileDef('sub_other.jpp', '', 'sub_path'),
         )
         os.mkdir(cls.TMP_TEST_FILES)
@@ -66,7 +66,7 @@ class TestCli(unittest.TestCase):
         self.assertEqual(cmd_out.count(b'\n'), 0)
 
     def test_user_input(self):
-        subprocess.check_call(['jpp', '--user-input', '{"bar": "baz"}'], cwd=self.TMP_TEST_FILES)
+        subprocess.check_call(['jpp', '--user-input', '{"bar": "baz"}', 'user_input_test.jpp'], cwd=self.TMP_TEST_FILES)
 
 
 def main():
