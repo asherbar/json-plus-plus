@@ -3,6 +3,9 @@ import json
 import os
 
 import pkg_resources
+import subprocess
+
+import sys
 
 from jpp.parser.grammar_def import GrammarDef
 
@@ -17,8 +20,11 @@ yacc_default_parse_args = {'tracking': True}
 
 def create_arg_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('file', help='Path to main JSON++ file', default='main.jpp')
-    version = pkg_resources.require('jpp')[0].version
+    parser.add_argument('file', help='Path to main JSON++ file', default='main.jpp', nargs='?')
+    try:
+        version = pkg_resources.require('jpp')[0].version
+    except pkg_resources.DistributionNotFound:
+        version = 'dev'
     parser.add_argument('--version', action='version', version='%(prog)s {}'.format(version))
     parser.add_argument('-p', '--path', type=list, nargs='+', help='One or more path to add to JSON++ path', default=[])
     parser.add_argument('-c', '--compact-print', action='store_true',
@@ -32,8 +38,8 @@ def main():
     arg_parser = create_arg_parser()
     args = arg_parser.parse_args()
     if args.test_cli:
-        from .cli_test.cli_test import main
-        main()
+        # Call as another Python process because unittest expects to run as __main__ module
+        subprocess.call([sys.executable, os.path.join(DIRNAME, 'cli_test', 'cli_test.py'), '--failfast'])
     else:
         with open(args.file) as source_fp:
             source = source_fp.read()
