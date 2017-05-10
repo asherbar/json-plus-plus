@@ -6,7 +6,7 @@ VERSION = '0.0.2.8'
 setup(
     name='jpp',
     version=VERSION,
-    packages=['jpp', 'jpp.parser', 'jpp.cli_test', 'jpp.cli_test.sub_path'],
+    packages=['jpp', 'jpp.parser', 'jpp.cli_test'],
     url='https://github.com/asherbar/json-plus-plus/archive/{}.tar.gz'.format(VERSION),
     license='MIT',
     author='asherbar',
