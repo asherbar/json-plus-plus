@@ -62,8 +62,8 @@ class TestCli(unittest.TestCase):
 
     def test_compact_path(self):
         cmd_out = subprocess.check_output(['jpp', '--compact-print', 'compact_test.jpp'], cwd=self.TMP_TEST_FILES)
-        # Make sure output is a one-liner
-        self.assertEqual(cmd_out.count(b'\n'), 0)
+        # Make sure output is a one-liner at most
+        self.assertLessEqual(cmd_out.count(b'\n'), 1)
 
     def test_user_input(self):
         subprocess.check_call(['jpp', '--user-input', '{"bar": "baz"}', 'user_input_test.jpp'], cwd=self.TMP_TEST_FILES)
