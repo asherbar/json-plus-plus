@@ -31,20 +31,24 @@ def create_arg_parser():
 def main():
     arg_parser = create_arg_parser()
     args = arg_parser.parse_args()
-    with open(args.file) as source_fp:
-        source = source_fp.read()
-    jpp_path_bk = os.environ.get(JPP_PATH, '')
-    os.environ[JPP_PATH] = PATH_SPLITTER.join([DIRNAME] + args.path if args.path else [])
-    if jpp_path_bk:
-        os.environ[JPP_PATH] += PATH_SPLITTER + jpp_path_bk
-    jpp_parser = GrammarDef(args.user_input).build(**yacc_default_init_args)
-    json_args = {}
-    if args.compact_print:
-        json_args['separators'] = (',', ':')
+    if args.test_cli:
+        from .cli_test.cli_test import main
+        main()
     else:
-        json_args['indent'] = 4
-    jpp_parser.parse(source, **yacc_default_parse_args)
-    print(json.dumps(jpp_parser.namespace, **json_args))
+        with open(args.file) as source_fp:
+            source = source_fp.read()
+        jpp_path_bk = os.environ.get(JPP_PATH, '')
+        os.environ[JPP_PATH] = PATH_SPLITTER.join([DIRNAME] + args.path if args.path else [])
+        if jpp_path_bk:
+            os.environ[JPP_PATH] += PATH_SPLITTER + jpp_path_bk
+        jpp_parser = GrammarDef(args.user_input).build(**yacc_default_init_args)
+        json_args = {}
+        if args.compact_print:
+            json_args['separators'] = (',', ':')
+        else:
+            json_args['indent'] = 4
+        jpp_parser.parse(source, **yacc_default_parse_args)
+        print(json.dumps(jpp_parser.namespace, **json_args))
 
 
 if __name__ == '__main__':
