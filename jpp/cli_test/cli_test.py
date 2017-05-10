@@ -1,12 +1,39 @@
 import os
+import shutil
 import subprocess
 
 import unittest
+from collections import namedtuple
 
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 class TestCli(unittest.TestCase):
+    TMP_TEST_FILES = os.path.join(CURR_DIR, '__tmp__')
+
+    @classmethod
+    def setUpClass(cls):
+        FileDef = namedtuple('FileDef', ('name', 'contents', 'sub_path'))
+        required_files = (
+            FileDef('compact_test.jpp', '{\n"many": 1, \n"lines": 2\n}'),
+            FileDef('main.jpp', ''),
+            FileDef('other.jpp', ''),
+            FileDef('compact_test.jpp', '{"foo": user_input["bar"]}'),
+            FileDef('sub_other.jpp', '', 'sub_path'),
+        )
+        for file_def in required_files:
+            if file_def.sub_path:
+                os.mkdir(os.path.join(cls.TMP_TEST_FILES, file_def.sub_path))
+                file_path = os.path.join(cls.TMP_TEST_FILES, file_def.sub_path, file_def.name)
+            else:
+                file_path = os.path.join(cls.TMP_TEST_FILES, file_def.name)
+            with open(file_path, 'w') as fp:
+                fp.write(file_def.contents)
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.TMP_TEST_FILES)
+
     # Naming makes sure this test is run first. There's no reason to run the rest of the tests if installation failed
     def test00_installation(self):
         self.assertEqual(subprocess.call(['jpp', '--version']), 0, 'jpp not installed. Please run "pip install jpp" '
