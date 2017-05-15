@@ -18,7 +18,8 @@ class PathResolver:
                 return os.path.join(path, found_path)
         raise ImportError('Unable to find {}'.format(dotted_path))
 
-    def _find_path(self, root, relative_dotted_path):
+    @classmethod
+    def _find_path(cls, root, relative_dotted_path):
         path_to_dotted = os.path.join(root, relative_dotted_path.replace('.', os.path.sep) + '.jpp')
         if os.path.exists(path_to_dotted):
             return path_to_dotted
