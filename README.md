@@ -1,4 +1,5 @@
-# json++
+
+# json++ [![Build Status](https://travis-ci.org/asherbar/json-plus-plus.svg?branch=master)](https://travis-ci.org/asherbar/json-plus-plus)
 An extension of JSON with an emphasis on reusability 
 ## Installation (requires [pip](https://pypi.python.org/pypi/pip))
 `pip install jpp`
