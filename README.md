@@ -4,17 +4,17 @@ An extension of JSON with an emphasis on reusability
 `pip install jpp`
 ## CLI Usage
 ```
-usage: cli.py [-h] [-p PATH [PATH ...]] [-c] [-u USER_INPUT] file
+usage: cli.py [-h] [--version] [-p PATH] [-c] [-u USER_INPUT] [file]
 
 positional arguments:
   file                  Path to main JSON++ file
 
 optional arguments:
   -h, --help            show this help message and exit
-  -p PATH [PATH ...], --path PATH [PATH ...]
-                        One or more path to add to JSON++ path
+  --version             show program's version number and exit
+  -p PATH, --path PATH  One or more path to add to JSON++ path
   -c, --compact-print   If specified, will print the most compact version
-  -u USER_INPUT, --user_input USER_INPUT
+  -u USER_INPUT, --user-input USER_INPUT
                         Optional user input values
 ```
 ### Basic usage
@@ -120,7 +120,7 @@ E.g., consider the following commands being executed from a shell:
 ```
 $> export JPP_PATH=~/foobar
 $> cd ~/foo/bar
-$> jpp example.jpp --path ~/foo/baz ~/qux/quux
+$> jpp --path ["~/foo/baz", "~/qux/quux"] example.jpp
 ```
 When `jpp` is run, `JPP_PATH` looks like this:
 ```
