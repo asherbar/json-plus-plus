@@ -1,15 +1,17 @@
 import os
 import shutil
-import subprocess
-
 import unittest
 from collections import namedtuple
+from io import StringIO
+
+from jpp.cli import main as cli_entry_point
 
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 class TestCli(unittest.TestCase):
     TMP_TEST_FILES = os.path.join(CURR_DIR, '__tmp__')
+    _dir_bk = None
 
     @classmethod
     def setUpClass(cls):
@@ -31,42 +33,49 @@ class TestCli(unittest.TestCase):
             with open(file_path, 'w') as fp:
                 fp.write(file_def.contents)
 
+        cls._dir_bk = os.getcwd()
+        os.chdir(os.path.join(cls.TMP_TEST_FILES))
+
     @classmethod
     def tearDownClass(cls):
+        os.chdir(cls._dir_bk)
         shutil.rmtree(cls.TMP_TEST_FILES)
 
-    # Naming makes sure this test is run first. If --failfast option is specified the rest of the tests will no run
-    def test00_installation(self):
-        try:
-            subprocess.call(['jpp', '--version'])
-        except FileNotFoundError:
-            installed = False
-        else:
-            installed = True
-        if not installed:
-            self.fail('jpp not installed. Please run "pip install jpp" and try again.')
+    def test_version(self):
+        cli_entry_point(['--version'])
 
     def test_help(self):
-        help_message = subprocess.check_output(['jpp', '-h'])
-        self.assertRegex(help_message, b'^usage:')
+        out_file_object = StringIO()
+        cli_entry_point(['jpp', '-h'], out_file_object)
+        self.assertRegex(out_file_object.read(), b'^usage:')
 
     def test_no_args(self):
-        subprocess.check_call(['jpp'], cwd=self.TMP_TEST_FILES)
+        out_file_object = StringIO()
+        cli_entry_point(['jpp'], out_file_object)
+        self.assertEqual(out_file_object.read(), '{}')
 
     def test_parse_specific_file(self):
-        subprocess.check_call(['jpp', 'other.jpp'], cwd=self.TMP_TEST_FILES)
+        out_file_object = StringIO()
+        cli_entry_point(['jpp', 'other.jpp'], out_file_object)
+        self.assertEqual(out_file_object.read(), '{}')
 
     def test_path_option(self):
-        subprocess.check_call(['jpp', '--path', os.path.join(CURR_DIR, 'sub_path'), 'sub_other.jpp'],
-                              cwd=self.TMP_TEST_FILES)
+        out_file_object = StringIO()
+        cli_entry_point(['jpp', '--path', os.path.join(CURR_DIR, 'sub_path'), 'sub_other.jpp'], out_file_object)
+        self.assertEqual(out_file_object.read(), '{}')
 
     def test_compact_path(self):
-        cmd_out = subprocess.check_output(['jpp', '--compact-print', 'compact_test.jpp'], cwd=self.TMP_TEST_FILES)
+        out_file_object = StringIO()
+        cli_entry_point(['jpp', '--compact-print', 'compact_test.jpp'], out_file_object)
+        self.assertEqual(out_file_object.read(), '{}')
         # Make sure output is a one-liner at most
-        self.assertLessEqual(cmd_out.count(b'\n'), 1)
+        self.assertLessEqual(out_file_object.read()(b'\n'), 1)
 
     def test_user_input(self):
-        subprocess.check_call(['jpp', '--user-input', '{"bar": "baz"}', 'user_input_test.jpp'], cwd=self.TMP_TEST_FILES)
+        out_file_object = StringIO()
+        cli_entry_point(['jpp', '--compact-print', '--user-input', '{"bar": "baz"}', 'user_input_test.jpp'],
+                        out_file_object)
+        self.assertEqual(out_file_object.read(), '{"foo": "baz"}\n')
 
 
 def main():
