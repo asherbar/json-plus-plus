@@ -65,7 +65,7 @@ class TestCli(unittest.TestCase):
         out_file_object = StringIO()
         cli_entry_point(['--compact-print', 'compact_test.jpp'], out_file_object)
         out_file_object.seek(0)
-        self.assertEqual(out_file_object.read(), '{"lines":2,"many":1}')
+        self.assertIn(out_file_object.read(), ('{"lines":2,"many":1}', '{"many":1,"lines":2}'))
 
     def test_user_input(self):
         out_file_object = StringIO()
