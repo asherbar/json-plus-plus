@@ -48,7 +48,7 @@ class TestCli(unittest.TestCase):
 
     def test_help(self):
         help_message = subprocess.check_output(['jpp', '-h'])
-        self.assertRegex(help_message, '^usage:')
+        self.assertRegex(help_message, b'^usage:')
 
     def test_no_args(self):
         subprocess.check_call(['jpp'], cwd=self.TMP_TEST_FILES)
