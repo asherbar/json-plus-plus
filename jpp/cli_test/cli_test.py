@@ -21,6 +21,7 @@ class TestCli(unittest.TestCase):
             FileDef('main.jpp', '', ''),
             FileDef('other.jpp', '', ''),
             FileDef('user_input_test.jpp', '{"foo": user_input["bar"]}', ''),
+            FileDef('sub_main.jpp', '', ''),
             FileDef('sub_other.jpp', '', 'sub_path'),
         )
         os.mkdir(cls.TMP_TEST_FILES)
@@ -34,48 +35,44 @@ class TestCli(unittest.TestCase):
                 fp.write(file_def.contents)
 
         cls._dir_bk = os.getcwd()
-        os.chdir(os.path.join(cls.TMP_TEST_FILES))
+        os.chdir(cls.TMP_TEST_FILES)
 
     @classmethod
     def tearDownClass(cls):
         os.chdir(cls._dir_bk)
         shutil.rmtree(cls.TMP_TEST_FILES)
 
-    def test_version(self):
-        cli_entry_point(['--version'])
-
-    def test_help(self):
-        out_file_object = StringIO()
-        cli_entry_point(['jpp', '-h'], out_file_object)
-        self.assertRegex(out_file_object.read(), b'^usage:')
-
     def test_no_args(self):
         out_file_object = StringIO()
-        cli_entry_point(['jpp'], out_file_object)
+        cli_entry_point([], out_file_object)
+        out_file_object.seek(0)
         self.assertEqual(out_file_object.read(), '{}')
 
     def test_parse_specific_file(self):
         out_file_object = StringIO()
-        cli_entry_point(['jpp', 'other.jpp'], out_file_object)
+        cli_entry_point(['other.jpp'], out_file_object)
+        out_file_object.seek(0)
         self.assertEqual(out_file_object.read(), '{}')
 
     def test_path_option(self):
         out_file_object = StringIO()
-        cli_entry_point(['jpp', '--path', os.path.join(CURR_DIR, 'sub_path'), 'sub_other.jpp'], out_file_object)
+        cli_entry_point(['--path', '["{}"]'.format(os.path.join(self.TMP_TEST_FILES, 'sub_path')), 'sub_main.jpp'],
+                        out_file_object)
+        out_file_object.seek(0)
         self.assertEqual(out_file_object.read(), '{}')
 
     def test_compact_path(self):
         out_file_object = StringIO()
-        cli_entry_point(['jpp', '--compact-print', 'compact_test.jpp'], out_file_object)
-        self.assertEqual(out_file_object.read(), '{}')
-        # Make sure output is a one-liner at most
-        self.assertLessEqual(out_file_object.read()(b'\n'), 1)
+        cli_entry_point(['--compact-print', 'compact_test.jpp'], out_file_object)
+        out_file_object.seek(0)
+        self.assertEqual(out_file_object.read(), '{"lines":2,"many":1}')
 
     def test_user_input(self):
         out_file_object = StringIO()
-        cli_entry_point(['jpp', '--compact-print', '--user-input', '{"bar": "baz"}', 'user_input_test.jpp'],
+        cli_entry_point(['--compact-print', '--user-input', '{"bar": "baz"}', 'user_input_test.jpp'],
                         out_file_object)
-        self.assertEqual(out_file_object.read(), '{"foo": "baz"}\n')
+        out_file_object.seek(0)
+        self.assertEqual(out_file_object.read(), '{"foo":"baz"}')
 
 
 def main():
