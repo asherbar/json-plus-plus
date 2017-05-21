@@ -80,7 +80,7 @@ class TestCli(unittest.TestCase):
         cli_entry_point(['--compact-print', '--loose-mode', 'unresolved.jpp'],
                         out_file_object)
         out_file_object.seek(0)
-        self.assertEqual(out_file_object.read(), '{"foo": Local: [bar]}')
+        self.assertEqual(out_file_object.read(), '{"foo":"Local: [bar]"}')
 
 
 def main():
