@@ -16,6 +16,9 @@ class SimpleExpression(Expression):
     def value(self):
         return self._value
 
+    def __str__(self):
+        return str(self._value)
+
 
 class CompoundExpression(Expression):
     def __init__(self, operation, expression, expression2=None):
@@ -28,6 +31,12 @@ class CompoundExpression(Expression):
     def value(self):
         return self._operation(self._expression.value) if self._expression2 is None \
             else self._operation(self._expression.value, self._expression2.value)
+
+    def __str__(self):
+        ret = '{}{}'.format(self._operation, self._expression)
+        if self._expression2 is not None:
+            ret += str(self._expression2)
+        return ret
 
 
 class LocalReferencedExpression(Expression):
@@ -47,6 +56,9 @@ class LocalReferencedExpression(Expression):
             ret = ret[key.value]
         return ret
 
+    def __str__(self):
+        return 'Ref: {}'.format(self._reference_resolver)
+
 
 class ImportedReferencedExpression(LocalReferencedExpression):
     def __init__(self, referenced_expression, imports):
@@ -57,6 +69,9 @@ class ImportedReferencedExpression(LocalReferencedExpression):
     def _namespace(self):
         return self._imports
 
+    def __str__(self):
+        return 'Imported: {}'.format(self._reference_resolver)
+
 
 class UserInputReferencedExpression(LocalReferencedExpression):
     def __init__(self, referenced_expression, user_inputs):
@@ -66,6 +81,9 @@ class UserInputReferencedExpression(LocalReferencedExpression):
     @property
     def _namespace(self):
         return self._user_inputs
+
+    def __str__(self):
+        return 'User: {}'.format(self._reference_resolver)
 
 
 class ExtendsExpression(Expression):
@@ -85,3 +103,6 @@ class ExtendsExpression(Expression):
         self._extended_value = {k.value if isinstance(k, Expression) else k: v for k, v in self._extended_value.items()}
         base_dict.update(self._extended_value)
         return base_dict
+
+    def __str__(self):
+        return '{} extends {}'.format(self._extended_value, self._base_expression)
