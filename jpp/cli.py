@@ -52,7 +52,7 @@ def main(cli_args=None, out_file_object=sys.stdout):
     else:
         json_args['indent'] = 4
     jpp_parser.parse(source, **yacc_default_parse_args)
-    out_file_object.write(json.dumps(jpp_parser.namespace, **json_args, cli=ExpressionEncoder))
+    out_file_object.write(json.dumps(jpp_parser.namespace, **json_args, cls=ExpressionEncoder))
 
 
 if __name__ == '__main__':
