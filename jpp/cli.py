@@ -5,6 +5,7 @@ import os
 import pkg_resources
 import sys
 
+from jpp.parser.expression import ExpressionEncoder
 from jpp.parser.grammar_def import GrammarDef
 from jpp.parser.path_resolver import JPP_PATH, PATH_SPLITTER
 
@@ -51,7 +52,7 @@ def main(cli_args=None, out_file_object=sys.stdout):
     else:
         json_args['indent'] = 4
     jpp_parser.parse(source, **yacc_default_parse_args)
-    out_file_object.write(json.dumps(jpp_parser.namespace, **json_args))
+    out_file_object.write(json.dumps(jpp_parser.namespace, **json_args, cli=ExpressionEncoder))
 
 
 if __name__ == '__main__':

@@ -1,3 +1,6 @@
+import json
+
+
 class UnableToResolveValue(KeyError):
     pass
 
@@ -109,3 +112,10 @@ class ExtendsExpression(Expression):
 
     def __str__(self):
         return '{} extends {}'.format(self._extended_value, self._base_expression)
+
+
+class ExpressionEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Expression):
+            return str(obj)
+        return json.JSONEncoder.default(self, obj)
