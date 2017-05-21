@@ -7,6 +7,9 @@ class Expression:
     def value(self):
         raise NotImplementedError()
 
+    def __repr__(self):
+        return str(self)
+
 
 class SimpleExpression(Expression):
     def __init__(self, value):
@@ -57,7 +60,7 @@ class LocalReferencedExpression(Expression):
         return ret
 
     def __str__(self):
-        return 'Ref: {}'.format(self._reference_resolver)
+        return 'Local: {}'.format(self._referenced_expression)
 
 
 class ImportedReferencedExpression(LocalReferencedExpression):
@@ -70,7 +73,7 @@ class ImportedReferencedExpression(LocalReferencedExpression):
         return self._imports
 
     def __str__(self):
-        return 'Imported: {}'.format(self._reference_resolver)
+        return 'Imported: {}'.format(self._referenced_expression)
 
 
 class UserInputReferencedExpression(LocalReferencedExpression):

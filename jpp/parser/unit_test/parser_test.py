@@ -213,5 +213,19 @@ class ParserUnittest(unittest.TestCase):
         expected_err_msg = """Syntax Error at line 4:30.
 ...       "syntax error": (}
                            ^"""
-        self.assertEqual(cm.exception.msg,
-                         expected_err_msg)
+        self.assertEqual(cm.exception.msg, expected_err_msg)
+
+    def test_loose_mode(self):
+        source = """
+        {
+            "foo": "bar",
+            "baz": local["does not exist"],
+            imported["does not exist"]: 1,
+            "foobaz": [1, local[2]]
+        }
+        """
+        self.object_under_test = GrammarDef(loose=True).build(**yacc_default_init_args)
+        self.object_under_test.parse(source, **yacc_default_parse_args)
+        self.assertEqual(str(self.object_under_test.namespace), "{'foobaz': [1, Local: [2]], "
+                                                                "Imported: [does not exist]: 1,"
+                                                                " 'baz': Local: [does not exist], 'foo': 'bar'}")

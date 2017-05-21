@@ -23,6 +23,7 @@ class TestCli(unittest.TestCase):
             FileDef('user_input_test.jpp', '{"foo": user_input["bar"]}', ''),
             FileDef('sub_main.jpp', '', ''),
             FileDef('sub_other.jpp', '', 'sub_path'),
+            FileDef('unresolved.jpp', '{"foo": local["bar"]}', ''),
         )
         os.mkdir(cls.TMP_TEST_FILES)
         for file_def in required_files:
@@ -73,6 +74,13 @@ class TestCli(unittest.TestCase):
                         out_file_object)
         out_file_object.seek(0)
         self.assertEqual(out_file_object.read(), '{"foo":"baz"}')
+
+    def test_loose_mode(self):
+        out_file_object = StringIO()
+        cli_entry_point(['--compact-print', '--loose-mode', 'unresolved.jpp'],
+                        out_file_object)
+        out_file_object.seek(0)
+        self.assertEqual(out_file_object.read(), '{"foo": Local: [bar]}')
 
 
 def main():

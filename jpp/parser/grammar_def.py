@@ -6,7 +6,7 @@ import ply.yacc as yacc
 from jpp.parser.importer import get_importer
 from jpp.parser.lex import tokens, create_lexer
 from jpp.parser.operation import Operation
-from jpp.parser.reference_resolver import NamespaceResolver
+from jpp.parser.reference_resolver import ReferenceResolver
 
 from jpp.parser.expression import LocalReferencedExpression, CompoundExpression, SimpleExpression, \
     ImportedReferencedExpression, ExtendsExpression, UserInputReferencedExpression
@@ -59,12 +59,12 @@ class GrammarDef:
         ('right', 'UMINUS', 'INVERT'),  # Unary minus operator
     )
 
-    def __init__(self, user_inputs=None):
+    def __init__(self, user_inputs=None, loose=False):
         self._user_inputs = {} if user_inputs is None else user_inputs
         self._imports = {}
         self.yacc = None
         self._logger = logging.getLogger(self.__class__.__name__)
-        self._reference_resolver = NamespaceResolver()
+        self._reference_resolver = ReferenceResolver(loose)
         self._dict_builder = {}
         self._list_builder = collections.deque()
         self._dotted_name_builder = collections.deque()

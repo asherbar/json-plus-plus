@@ -3,8 +3,9 @@ import logging
 from jpp.parser.expression import Expression
 
 
-class NamespaceResolver:
-    def __init__(self):
+class ReferenceResolver:
+    def __init__(self, loose=False):
+        self._loose = loose
         self._logger = logging.getLogger(self.__class__.__name__)
         self.namespace = {}
         self._unresolved_refs = set()
@@ -41,7 +42,10 @@ class NamespaceResolver:
             did_resolve = False
             self.namespace = {resolve_value(k): resolve_value(v) for k, v in self.namespace.items()}
             if need_resolve and not did_resolve:
-                raise NameError('Unable to resolve all references')
+                if self._loose:
+                    need_resolve = False
+                else:
+                    raise NameError('Unable to resolve all references')
 
     def clear_namespace(self):
         self.namespace.clear()

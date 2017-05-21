@@ -25,6 +25,8 @@ def create_arg_parser():
     parser.add_argument('-c', '--compact-print', action='store_true',
                         help='If specified, will print the most compact version')
     parser.add_argument('-u', '--user-input', type=json.loads, help='Optional user input values', default={})
+    parser.add_argument('-l', '--loose-mode', action='store_true',
+                        help='If specified, unresolved nodes will be ignored')
     return parser
 
 
@@ -42,7 +44,7 @@ def main(cli_args=None, out_file_object=sys.stdout):
     os.environ[JPP_PATH] = PATH_SPLITTER.join([os.getcwd()] + (args.path if args.path else []))
     if jpp_path_bk:
         os.environ[JPP_PATH] += PATH_SPLITTER + jpp_path_bk
-    jpp_parser = GrammarDef(args.user_input).build(**yacc_default_init_args)
+    jpp_parser = GrammarDef(args.user_input, args.loose_mode).build(**yacc_default_init_args)
     json_args = {}
     if args.compact_print:
         json_args['separators'] = (',', ':')
