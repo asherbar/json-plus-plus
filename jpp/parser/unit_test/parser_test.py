@@ -226,6 +226,8 @@ class ParserUnittest(unittest.TestCase):
         """
         self.object_under_test = GrammarDef(loose=True).build(**yacc_default_init_args)
         self.object_under_test.parse(source, **yacc_default_parse_args)
-        self.assertEqual(str(self.object_under_test.namespace), "{'foobaz': [1, Local: [2]], "
-                                                                "Imported: [does not exist]: 1,"
-                                                                " 'baz': Local: [does not exist], 'foo': 'bar'}")
+        res_as_lst = list(self.object_under_test.namespace.items())
+        res_as_lst = sorted(list(map(lambda kv: (str(kv[0]), str(kv[1])), res_as_lst)))
+        expected = sorted([('baz', '<Local: [does not exist]>'), ('foo', 'bar'), ('foobaz', '[1, <Local: [2]>]'),
+                           ('<Imported: [does not exist]>', '1')])
+        self.assertEqual(res_as_lst, expected)

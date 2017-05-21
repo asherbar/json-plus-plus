@@ -63,7 +63,7 @@ class LocalReferencedExpression(Expression):
         return ret
 
     def __str__(self):
-        return 'Local: {}'.format(self._referenced_expression)
+        return '<Local: {}>'.format(self._referenced_expression)
 
 
 class ImportedReferencedExpression(LocalReferencedExpression):
@@ -76,7 +76,7 @@ class ImportedReferencedExpression(LocalReferencedExpression):
         return self._imports
 
     def __str__(self):
-        return 'Imported: {}'.format(self._referenced_expression)
+        return '<Imported: {}>'.format(self._referenced_expression)
 
 
 class UserInputReferencedExpression(LocalReferencedExpression):
@@ -89,7 +89,7 @@ class UserInputReferencedExpression(LocalReferencedExpression):
         return self._user_inputs
 
     def __str__(self):
-        return 'User: {}'.format(self._reference_resolver)
+        return '<User: {}>'.format(self._referenced_expression)
 
 
 class ExtendsExpression(Expression):
@@ -111,7 +111,7 @@ class ExtendsExpression(Expression):
         return base_dict
 
     def __str__(self):
-        return '{} extends {}'.format(self._extended_value, self._base_expression)
+        return '<{} extends {}>'.format(self._extended_value, self._base_expression)
 
 
 class ExpressionEncoder(json.JSONEncoder):
